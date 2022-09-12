@@ -1,0 +1,348 @@
+
+{% extends 'main.html' %}
+{% load static %}
+{% static '' as baseUrl %}
+{% block content %}
+        <!-- main -->
+       <div id="main">
+            
+            <!-- header end  -->	
+            <!-- wrapper  -->	
+            <div id="wrapper">
+                <!-- content -->	
+                <div class="content">
+                    <!--  section  -->
+                    <section class="hero-section hero-section_dec" data-scrollax-parent="true">
+                        <div class="bg-wrap">
+                            <div class="bg par-elem "  data-bg="{% static 'images/Uploads/slider.png' %}" data-scrollax="properties: { translateY: '100%' }"></div>
+                        </div>
+                        <div class="overlay"></div>
+                        <div class="container">
+                            <div class="hero-title hero-title_small">
+                                <h4>Events happening across the campus</h4>
+                                <h2>See what's going on at PES University <br>
+                                    <!-- Using Our Platform -->
+                                </h2>
+                            </div>
+                          
+                        </div>
+                    </section>
+                    <!--  section  end-->
+                    <!-- breadcrumbs-->
+                    <div class="breadcrumbs fw-breadcrumbs sp-brd fl-wrap">
+                        <div class="container">
+                            <!-- <div class="breadcrumbs-list">
+                                <a href="#">Home</a>  <span>Home Image</span>
+                            </div> -->
+                           
+                        </div>
+                    </div>
+                    <!-- breadcrumbs end -->
+                    <!-- section -->
+                    <section class="gray-bg small-padding">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="section-title fl-wrap">
+                                        <h4>Browse Events</h4>
+                                        <h2>Recent Events</h2>
+                                    </div>
+                                </div>
+
+                                <!-- ongoing------------------------------------------------- -->
+                                <!-- <div class="col-md-8">
+                                    <div class="listing-filters gallery-filters">
+                                        <a href="#" class="gallery-filter  gallery-filter-active" data-filter="*"> <span>Ongoing Events</span></a>
+                                        <a href="{11}" class="gallery-filter" data-filter=".for_sale"> <span>Upcoming Events</span></a>
+                                        <a href="#" class="gallery-filter" data-filter=".for_rent"> <span>Previous</span></a>
+                                    </div>
+                                </div> -->
+                                <!-- ongoing------------------------------------------------- -->
+                            </div>
+                            <div class="clearfix"></div>
+                            <!-- grid-item-holder-->
+                            <div class="grid-item-holder gallery-items gisp fl-wrap">
+                                <!-- gallery-item-->
+                                {% for event in events.object_list %}
+                                <div class="gallery-item for_sale">
+                                    
+                                    <!-- listing-item -->
+                                    <div class="listing-item">
+                                        <article class="geodir-category-listing fl-wrap">
+                                            <div class="geodir-category-img fl-wrap">
+                                                <a href="{% url 'single-event' event.id %}" class="geodir-category-img_item">
+                                                    <img src="{{event.featured_img.url}}" alt="">
+                                                    
+                                                    <div class="overlay"></div>
+                                                
+                                                    <ul class="list-single-opt_header_cat">
+                                                        {% now "Y-m-d" as todays_date %}
+                                                        
+                                                         
+                                                        
+                                                        <div >
+                                                            {% if todays_date < event.event_start_date|date:"Y-m-d" %}
+                                                            <li><a href="#" class="cat-opt " style="background-color: red;" >Upcoming</a></li>
+                                                           {% elif  todays_date == event.event_start_date|date:"Y-m-d" %}
+                                                           <li><a href="#" class="cat-opt " style="background-color: rgb(0, 255, 26);">Ongoing</a></li>
+                                                           {% else %}
+                                                           <li><a href="#" class="cat-opt color-bg" >Previous</a></li>
+                                                           {% endif %}
+                                                        
+                                                       
+                                                    </ul>
+                                                    <a href="#" class="geodir_save-btn tolt" data-microtip-position="left" data-tooltip="likes"><span><i class="fal fa-heart"></i></span></a>
+                                                    <a href="#" class="compare-btn tolt" data-microtip-position="left" data-tooltip="Views"><span><i class="fal fa-eye"></i></span></a>
+                                             
+                                                
+                                            </div>
+                                            
+                                            <div class="geodir-category-content fl-wrap">
+                                                <h3 class="title-sin_item"><a href="listing-single.html">{{event.title}}</a></h3>
+                                                <div class="geodir-category-content_price"> {{event.event_start_date}}</div>
+                                                <h6 style="font-size: 13px; line-height: 22px; padding-bottom: 10px; font-weight: 400; color: #878C9F; text-align: left;">{{ event.about |truncatewords:20 }}</h6>
+                                                <!-- {% if event.campus != None %} -->
+                                                <div class="geodir-category-footer fl-wrap">
+                                                    <!-- <a href="" class="gcf-company single-map-item"><i class="fas fa-map-marker-alt"></i><span>{{event.address}}</span></a> -->
+                                                    <a href="#" class="single-map-item tolt " data-newlatitude="40.72956781" data-newlongitude="-73.99726866"   data-microtip-position="top-left"  data-tooltip="On the map"><i class="fas fa-map-marker-alt" style="color: #3270FC;justify-content: baseline;" ></i> <span  style="color: #878C9F;">{{event.address}}</span></a>
+                                                </div>
+                                                <!-- {% endif %} -->
+                                            </a>
+                                            </div>
+                                        </article>
+                                    </div>
+                                   
+                                    <!-- listing-item end-->															
+                                </div>
+                                {% endfor %}
+                     
+                                <!-- gallery-item end-->
+                               													
+                                <!-- gallery-item-->
+                                															
+                                														
+                                																		
+                                </div>
+                               															
+                            </div>
+                           
+                        </div>
+                    </section>
+                  	
+                    <!-- {%if events.has_previous %} {# whether the previous page exists #}
+                        <a href="?page={{events.previous_page_number}}"><</a> {# link to the prev page #}
+                    {% endif %}
+                    <span>{{events.number}}</span> {# the current page number #}
+                    
+                    {%if events.has_next %} {# whether the next page exists #}
+                        <a href="?page={{events.next_page_number}}">></a> {# link to the next page #}
+                    {% endif %} -->
+                    <center>
+                          <!-- pagination-->
+                          <style type="text/css">
+                            .paginator-li{
+                                list-style: none;
+                                display: inline;
+                            }
+                          </style>
+                     <div class="pagination">
+                        {%if events.has_previous %}
+                        <a href="?page={{events.previous_page_number}}" class="prevposts-link"><i class="fa fa-caret-left"></i></a>
+                        {% endif %}
+                       
+                        
+                        
+                        {% for i in events.paginator.page_range %}
+                        {% if events.number == i %}
+                          <li class="paginator-li "><span class="page-numbers current"><a >{{ i }}</a></span></li>
+                        {% else %}
+                          <li class="paginator-li"><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                      {% endfor %}
+
+
+                        {%if events.has_next %}
+                        <a href="?page={{events.next_page_number}}" class="nextposts-link"><i class="fa fa-caret-right"></i></a>
+                        {% endif %}
+                    </div>
+                    <!-- <div class="pagination float-pagination">
+                        <a href="#" class="prevposts-link"><i class="fa fa-caret-left"></i></a>
+                        <a href="#" >1</a>
+                        <a href="#" class="current-page">2</a>
+                        <a href="#">3</a>
+                        <a href="#">4</a>
+                        <a href="#" class="nextposts-link"><i class="fa fa-caret-right"></i></a>
+                    </div> -->
+                    <!-- pagination end-->						
+                    <!-- pagination end-->
+                    </center>
+                    <!-- section end-->	
+                    <!-- section -->
+                    <section>
+                        <div class="container">
+                            <!--about-wrap -->
+                            <div class="about-wrap">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="about-title ab-hero fl-wrap">
+                                            <h2>Why Choose Our Properties </h2>
+                                            <h4>Check video presentation to find   out more about us .</h4>
+                                        </div>
+                                        <div class="services-opions fl-wrap">
+                                            <ul>
+                                                <li>
+                                                    <i class="fal fa-headset"></i>
+                                                    <h4>24 Hours Support  </h4>
+                                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                                                </li>
+                                                <li>
+                                                    <i class="fal fa-users-cog"></i>
+                                                    <h4>User Admin Panel</h4>
+                                                    <p>Nulla posuere sapien vitae lectus suscipit, et pulvinar nisi tincidunt. Curabitur convallis fringilla diam sed aliquam. </p>
+                                                </li>
+                                                <li>
+                                                    <i class="fal fa-phone-laptop"></i>
+                                                    <h4>Mobile Friendly</h4>
+                                                    <p>Curabitur convallis fringilla diam sed aliquam. Sed tempor iaculis massa faucibus feugiat. In fermentum facilisis massa.</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-6">
+                                        <div class="about-img fl-wrap">
+                                            <img src="images/all/1.jpg" class="respimg" alt="">
+                                            <div class="about-img-hotifer color-bg">
+                                                <p>Your website is fully responsive so visitors can view your content from their choice of device.</p>
+                                                <h4>Mark Antony</h4>
+                                                <h5>Homeradar CEO</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- about-wrap end  -->							
+                        </div>
+                    </section>
+                    <!-- section end-->	
+                    <!-- section  -->
+                    
+                    <!--section end-->  					
+                    <!-- section -->
+               
+                    <!-- section -->
+                    
+                    <!-- section end-->	 
+                    <!-- section -->
+                   
+                </div>
+                <!-- content end -->	
+               
+                <!-- subscribe-wrap end -->	
+                <!-- footer -->	
+                <footer class="main-footer fl-wrap">
+                    <div class="footer-inner fl-wrap">
+                        <div class="container">
+                            <div class="row">
+                                <!-- footer widget-->
+                                <div class="col-md-3">
+                                    <div class="footer-widget fl-wrap">
+                                        <div class="footer-widget-logo fl-wrap">
+                                            <img src="{% static 'images/pes_logo.png' %}" alt="">
+                                        </div>
+                                        <h1><p>PES University</p></h1>
+                                        <div class="fw_hours fl-wrap">
+                                            <span>Email:<strong> admissions@pes.edu</strong></span>
+                                            <span><i class="fal fa-map-marker"></i> Address:<strong> Outer Ring Rd, Banashankari 3rd Stage, Banashankari, Bengaluru, Karnataka 560085</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                             
+                                <!-- footer widget end-->
+                                <!-- footer widget-->
+                                <div class="col-md-3">
+                                    <div class="footer-widget fl-wrap">
+                                        <div class="footer-widget-title fl-wrap">
+                                            <h4>Browse by Campus</h4>
+                                        </div>
+                                        <ul class="footer-list fl-wrap">
+                                            <li><a href="about.html">PES University RR Campus</a></li>
+                                            <li><a href="blog.html">PES University EC Campus</a></li>
+                                            <li><a href="pricing.html">PES University HN Campus</a></li>
+                                            
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- footer widget end--> 
+                                <!-- footer widget-->
+                                <div class="col-md-3">
+                                    <div class="footer-widget fl-wrap">
+                                        <div class="footer-widget-title fl-wrap">
+                                            <h4>Contact</h4>
+                                        </div>
+                                        <ul  class="footer-contacts fl-wrap">
+                                            <!-- <li> <span><i class="fal fa-map-marker"></i> Adress :</span><a href="#" target="_blank"></a></li> -->
+                                            <li><span><i class="fal fa-phone"></i> Telephone :</span><a href="#"> 080 - 26729994</a></li>
+                                        </ul>
+                                        <div class="footer-social fl-wrap">
+                                            <ul>
+                                                <li><a href="https://www.facebook.com/pesuniversity" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                                                <li><a href="https://twitter.com/pesuniversity" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                                                <li><a href="https://www.instagram.com/pesuniversity/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                                                <li><a href="https://www.linkedin.com/school/pesuniversity/" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
+                                                <li><a href="https://www.youtube.com/pesuniversity" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- footer widget end-->   
+                                <!-- footer widget-->
+                                <div class="col-md-3">
+                                    <div class="footer-widget fl-wrap">
+                                        <div class="footer-widget-title fl-wrap">
+                                            <h4>Filter by Ribbons</h4>
+                                        </div>
+                                        <div class="api-links fl-wrap">
+                                            <a href="#" class="api-btn color-bg"><i class="fab fa-google-play"></i> ONGOING</a>  
+                                            <a href="#" class="api-btn color-bg"><i class="fab fa-google-play"></i>UPCOMING</a>
+                                            <a href="#" class="api-btn color-bg"><i class="fab fa-google-play"></i>PREVIOUS</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- footer widget end-->                                     
+                            </div>
+                        </div>
+                    </div>
+                    <!--sub-footer-->
+                    <div class="sub-footer gray-bg fl-wrap">
+                        <div class="container">
+                            <div class="copyright"> © PES University | Powered by <a href="https://nith.ooo" target="_blank">NiTH</a></div>
+                           
+                        </div>
+                    </div>
+                    <!--sub-footer end -->                     
+                </footer>
+                <!-- footer end -->
+            </div>
+            <!-- wrapper end -->
+            
+            <a class="to-top color-bg"><i class="fas fa-caret-up"></i></a>   
+            <!--map-modal -->
+            <div class="map-modal-wrap">
+                <div class="map-modal-wrap-overlay"></div>
+                <div class="map-modal-item">
+                    <div class="map-modal-container fl-wrap">
+                        <h3> <span>Listing Title </span></h3>
+                        <div class="map-modal-close"><i class="far fa-times"></i></div>
+                        <div class="map-modal fl-wrap">
+                            <div id="singleMap" data-latitude="40.7" data-longitude="-73.1"></div>
+                            <div class="scrollContorl"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--map-modal end --> 			
+    </div>
+     
+ 
+{% endblock content %}

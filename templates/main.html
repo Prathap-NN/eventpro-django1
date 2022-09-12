@@ -1,0 +1,44 @@
+
+<!DOCTYPE HTML>
+{% load static %}
+<html lang="en">
+    <head>
+        <!--=============== basic  ===============-->
+        <meta charset="UTF-8">
+        <title>Events - PES University </title>
+        <meta name="robots" content="index, follow"/>
+        <meta name="keywords" content=""/>
+        <meta name="description" content=""/>
+        <!--=============== css  ===============-->	
+        <link type="text/css" rel="stylesheet" href="{% static 'css/plugins.css' %}">
+        <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link type="text/css" rel="stylesheet" href="{% static 'css/dashboard-style.css' %}">
+        <link type="text/css" rel="stylesheet" href="{% static 'css/color.css' %}">
+        <link type="text/css" rel="stylesheet" href="{% static 'css/reset.css' %}">
+        <link type="text/css" rel="stylesheet" href="{% static 'css/cs-style.css' %}">
+        <!--=============== favicons ===============-->
+        <link rel="shortcut icon" href="{% static 'images/Uploads/favicon.ico' %}">
+    </head>
+    <body>
+        
+     {% include 'navbar.html' %}
+
+     {% block content %}
+
+     {% endblock content %}
+     <!--=============== scripts  ===============-->
+     <script src="{% static 'js/jquery.min.js' %}"></script>
+     <script src="{% static 'js/plugins.js' %}"></script>
+     <script src="{% static 'js/scripts.js' %}"></script>
+     <script src="https://maps.googleapis.com/maps/api/js?key=YOU_API_KEY_HERE&libraries=places"></script>
+     <script src="{% static 'js/map-add.js' %}"></script>
+     <script src="{% static 'js/dashboard.js' %}"></script>
+     <script src="{% static 'js/scripts.js' %}"></script>
+     <script src="{% static 'js/map-single.js' %}"></script>
+     <script src="{% static 'js/map-plugins.js' %}"></script>
+     <script src="{% static 'js/map-listing.js' %}"></script>
+     <script src="{% static 'js/chart.js' %}"></script>
+     <script src="{% static 'js/cs.js' %}"></script>
+
+    </body>
+</html>

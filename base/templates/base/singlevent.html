@@ -1,0 +1,734 @@
+{% extends 'main.html' %}
+{% load filter_tags %}
+{% load static %}
+{% static '' as baseUrl %}
+ {% block content %}
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+ <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+ <div id="wrapper">
+    <!-- content -->	
+    <div class="content">
+        {% csrf_token %}
+        <section class="hidden-section   single-hero-section" data-scrollax-parent="true" id="sec1">
+            <div class="bg-wrap bg-parallax-wrap-gradien">
+                <div class="bg par-elem "  data-bg="{% static 'images/Uploads/slider.png' %}" data-scrollax="properties: { translateY: '30%' }"></div>
+            </div>
+            
+            <div class="container">
+                {% now "Y-m-d" as todays_date %}
+                <div class="list-single-opt_header fl-wrap">
+                    <ul class="list-single-opt_header_cat">
+                        {% if todays_date < event.event_start_date|date:"Y-m-d" %}
+                        <li> <a href="#" class="cat-opt " style="background-color: red;" >Upcoming</a></li>
+                        {% elif  todays_date == event.event_start_date|date:"Y-m-d" %}
+                        <li><a href="#" class="cat-opt " style="background-color: rgb(0, 255, 26);">Ongoing</a></li>
+                        {% else %}
+                        <li><a href="#" class="cat-opt color-bg" >Previous</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="list-single-header-item no-bg-list_sh fl-wrap" >
+                    <div class="row" style="align-items: center;display:flex;">
+                            <div class="col-md-12">
+                     
+                            <h1>{{event.title}}<span class="verified-badge tolt" data-microtip-position="bottom"  data-tooltip="Verified"></i></span></h1>
+                            <div class="geodir-category-location fl-wrap">
+                                <a href="#"><i class="far fa-calendar-check"></i><span> </span> {{event.event_start_date}} - {{event.event_end_date}}</a> 
+                                <a href="#"><i class="fas fa-clock"></i><span> </span> {{event.event_start_time}} - {{event.event_end_time}}</a> 
+                               <script>
+                                function tConvert (time) {
+  // Check correct time format and split into components
+  time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+  if (time.length > 1) { // If time format correct
+    time = time.slice (1);  // Remove full string match value
+    time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+    time[0] = +time[0] % 12 || 12; // Adjust hours
+  }
+  return time.join (''); // return adjusted time or original string
+}
+
+tConvert ('18:00:00');
+
+                               </script>
+                             
+                            </div>
+                            <div></div>
+                            {% if event.address %}
+                            <div class="geodir-category-location fl-wrap" style="margin-bottom:10px">
+                                <h2> <a href="#"><i class="fas fa-map-marker-alt"></i>{{event.address}}</a> </h2>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="share-holder hid-share">
+                                <a href="#" class="share-btn showshare sfcs">  <i class="fas fa-share-alt"></i>  Share   </a>
+                                <div class="share-container  isShare"></div>
+                            </div>
+                        </div>
+                    
+                    </div>
+                    <div class="list-single-header-footer fl-wrap">
+                       
+                        <div class="list-single-stats">
+                            <ul class="no-list-style">
+                                <li><span class="viewed-counter"><i class="fas fa-eye"></i> Viewed - {{event.view_count}}</span></li>
+                               
+                               
+                                
+                                <button id="like" name="{{event.id}}" value="like" style="border:none;background:none">
+                                    <li>
+                                        <span class="bookmark-counter">
+                                            <i class="fas fa-heart">
+                                            </i>
+                                        </span>
+                                    </li>
+                                </button>
+                                <span id="likes_count">{{event.num_likes}}</span>
+                                <script>
+                                    $('#like').click(function(){
+                                        console.log("clicked me");
+                                        var val = $(this).val();
+                                        if(val=="like"){
+                                            $(this).val("dislike")
+                                        }
+                                        else{
+                                            $(this).val("like")
+                                        }
+                                          $.ajax({
+                                                   type: "POST",
+                                                   url: "{% url 'like' %}",
+                                                   data: {'key':val, 'id':$(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                                                   success: function(response) {
+                                                    console.log("----",response.likes_count)
+                                                    $('#likes_count').html('').append(response.likes_count)
+                                                    document.getElementById('likes_count').innerHTML=response.likes_count
+                                              },
+                                              }); 
+                                        })
+                                    </script>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+        <div class="breadcrumbs fw-breadcrumbs smpar fl-wrap">
+            <div class="container">
+                {% if request.user.is_authenticated %}
+                <div class="show-more-snopt smact"><i class="fal fa-ellipsis-v"></i></div>
+                <div class="show-more-snopt-tooltip">
+                    <a href="{% url 'edit-event' event.id %}" class="custom-scroll-link"> <i class="far fa-edit"></i>Edit</a>
+
+                    <a href="{% url 'delete' event.id %}" class="tolt" data-microtip-position="top-left"  onclick="return confirm('Are you sure you want to delete this?')"><i class="far fa-trash-alt"></i>Delete</a>
+                </div>
+                {% endif %}
+                <a class="print-btn tolt " href="javascript:window.print()" data-microtip-position="bottom"  data-tooltip="Print"><i class="fas fa-print"></i></a>
+                <!-- <a href="{{event.external_link}}" class="share-btn showshare sfcs"> </i>   </a> -->
+                {% if event.external_link %}
+                <div class="like-btn"><a href="{{event.external_link}}" target="_blank">{{event.button_name}}</a> </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="gray-bg small-padding fl-wrap">
+            <div class="container">
+                <div class="row">
+                    <!--  listing-single content -->
+                    <div class="col-md-8">
+                        <div class="list-single-main-wrapper fl-wrap">
+                            <!--  scroll-nav-wrap -->
+                            <div class="scroll-nav-wrap">
+                                <nav class="scroll-nav scroll-init fixed-column_menu-init">
+                                    <ul class="no-list-style">
+                                        <li><a href="#sec1"><i class="fal fa-map-pin"></i></a><span>Location</span></li>
+                                        <li><a href="#sec3"><i class="fal fa-info"></i> </a><span>Details</span></li>
+                                        <li><a  href="#sec2"><i class="fal fa-image"></i></a><span>Gallery</span></li>
+                                        <li><a class="act-scrlink" href="#sec1"><i class="fal fa-home-lg-alt"></i></a><span>Main</span></li>
+                                        
+                                        
+                                        
+                                    </ul>
+                                    <div class="progress-indicator">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="-1 -1 34 34">
+                                            <circle cx="16" cy="16" r="15.9155"
+                                                class="progress-bar__background" />
+                                            <circle cx="16" cy="16" r="15.9155"
+                                                class="progress-bar__progress 
+                                                js-progress-bar" />
+                                        </svg>
+                                    </div> 
+                                </nav>
+                            </div>
+                            
+                        
+                             <!-- 4 boxes -->
+                             <div class="list-single-facts fl-wrap">
+                                <!-- inline-facts -->
+                                <div class="inline-facts-wrap">
+                                    <div class="inline-facts">
+                                        <i class="fal fa-home-lg"></i>
+                                        <h6>Type</h6>
+                                        <span>Apartment/ House</span>
+                                    </div>
+                                </div>
+                                <!-- inline-facts end -->
+                                <!-- inline-facts  -->
+                                <div class="inline-facts-wrap">
+                                    <div class="inline-facts">
+                                        <i class="fal fa-users"></i>
+                                        <h6>Accomodation</h6>
+                                        <span>6 Guest</span>
+                                    </div>
+                                </div>
+                                <!-- inline-facts end -->
+                                <!-- inline-facts -->
+                                <div class="inline-facts-wrap">
+                                    <div class="inline-facts">
+                                        <i class="fal fa-bed"></i>
+                                        <h6>Bedrooms</h6>
+                                        <span>3 Bedrooms / 4 Beds</span>
+                                    </div>
+                                </div>
+                                <!-- inline-facts end -->
+                                <!-- inline-facts -->
+                                <div class="inline-facts-wrap">
+                                    <div class="inline-facts">
+                                        <i class="fal fa-bath"></i>
+                                        <h6>Bathrooms</h6>
+                                        <span>3 Full</span>
+                                    </div>
+                                </div>
+                                <!-- inline-facts end -->                                                                        
+                            </div>
+
+                            <!-- 4boxes -->
+                        
+                            <div class="list-single-main-container fl-wrap" id="sec3">
+                                <!-- list-single-main-item -->
+                                <div class="list-single-main-item fl-wrap">
+                                    <div class="list-single-main-item-title">
+                                    
+                                        <h3>{{event.title}}</h3>
+                                        
+                                    </div>
+                                    <div class="list-single-main-item_content fl-wrap">
+                                        <p>{{event.about}}</p>
+                                        <!-- <a href="#" >Visit Website</a> -->
+                                    </div>
+                                    
+                                </div>
+
+                               
+                                <div class="list-single-facts fl-wrap" style="display:flex;justify-content:space-evenly">
+                                    <!-- inline-facts -->
+                                    {% if event.department %}
+                                    <div class="inline-facts-wrap">
+                                        <div class="inline-facts">
+                                            <!-- <i class="fal fa-home-lg"></i> -->
+                                            <i class='fas fa-school'></i>
+                                            <h6>Department</h6>
+                                            {% with event.department|split:"," as tags %}
+                                            {% for tag in tags %}
+                                            <span> {{tag}} </br></span>
+                                            {% endfor %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                    <!-- inline-facts end -->
+                                    <!-- inline-facts  -->
+                                    {% if event.campus %}
+                                    <div class="inline-facts-wrap">
+                                        <div class="inline-facts">
+                                            <!-- <i class="fal fa-users"></i> -->
+                                            <i class="fa fa-university" aria-hidden="true"></i>
+                                            <h6>Campus</h6>
+                                            <span>{{event.campus}}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <!-- inline-facts end -->
+                                    <!-- inline-facts -->
+                                    {% if event.tags %}
+                                    <div class="inline-facts-wrap">
+                                        <div class="inline-facts">
+                                            <!-- <i class="fal fa-bed"></i> -->
+                                            <i class="fa fa-tag" aria-hidden="true"></i>
+                                            <h6>Tags</h6>
+                                            <span>{{event.tags}}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}                                                       
+                                </div>
+
+                              
+                               
+                                                                           
+                            </div>
+                            <div class="box-widget bwt-first fl-wrap" style="margin-top:30px;">
+                                <div class="box-widget-title fl-wrap box-widget-title-color color-bg no-top-margin">Contacts</div>
+                                <div class="box-widget-content fl-wrap">
+                                    <div class="contats-list clm fl-wrap">
+                                        <ul class="no-list-style">
+                                            {% if event.contact %}
+                                            <li><span><i class="fal fa-phone"></i> Phone :</span> <a href="#"><li>{{event.contact}}</li></a></li>
+                                            {% endif %}
+                                            {% if event.email %}
+                                            <li><span><i class="fal fa-envelope"></i> Mail :</span> <a href="#"target="_blank">{{event.email}}</a></li>
+                                            {% endif %}
+                                            {% if event.website %}
+                                            <li><span><i class="fal fa-browser"></i> Website :</span> <a href="https://{{event.website}}" target="_blank">{{event.website}}</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                    <div class="profile-widget-footer fl-wrap">
+                                        <div class="card-info-content_social ">
+                                            <ul> 
+                                                {% if event.facebook %}
+                                                <li><a href="https://www.facebook.com/{{event.facebook}}" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                                                {% endif %}
+                                                {% if event.twitter %}
+                                                <li><a href="https://twitter.com/{{event.twitter}}" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                                                {% endif %}
+                                                {% if event.instagram %}
+                                                <li><a href="https://instagram.com/{{event.instagram}}" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                                                {% endif %}
+                                                {% if event.youtube %}
+                                                <li><a href="https://www.youtube.com/{{event.youtube}}" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% for speakers in speaker %}
+                            {% if speakers.event_id == event.id %}
+                            <div class="box-widget fl-wrap">
+                                <div class="profile-widget">
+                                    <div class="profile-widget-header color-bg smpar fl-wrap">
+                                        <div class="pwh_bg"></div>
+                                        
+                                        <div class="profile-widget-card">
+                                            <div class="profile-widget-image">
+                                                <img src="{{speakers.profile_pic}}" alt="">
+                                            </div>
+                                         
+                                        </div>
+                                    </div>
+    
+    
+                        
+                                </div>
+                            </div>
+                           
+                              <div class="geodir-category-content fl-wrap">
+                                    <div class="agent_card-title fl-wrap">
+                                        <h4><a href="agency-single.html" >{{speakers.name}}</a></h4>
+                                        
+                                    </div>
+                                    <p>{{speakers.about}}</p>
+                                  
+                                    <div class="geodir-category-footer fl-wrap">
+                                        <a href="agency-single.html" class="btn float-btn color-bg small-btn">Edit Details</a>
+                                        <a href="mailto:yourmail@email.com" class="tolt ftr-btn" data-microtip-position="top-left" data-tooltip="Speaker Email"><i class="fal fa-envelope"></i></a>
+                                        <!-- <a href="tel:123-456-7890" class="tolt ftr-btn" data-microtip-position="top-left" data-tooltip="Call Now"><i class="fal fa-phone"></i></a>	 -->
+                                    </div>
+                                </div>
+                        {% endif %}
+                        {% endfor %}
+                        </div>
+                     
+                    </div>
+                    <!-- listing-single content end-->
+                    
+                    
+                    <!-- sidebar -->
+                    <div class="col-md-4">
+                        <div class="box-widget fl-wrap">
+                            <div class="profile-widget">
+                                        <img src="{{event.featured_img.url}}" style="max-width:100%;max-height:100%;" alt="">
+                                         
+                                </div>
+                                <div class="profile-widget-content fl-wrap">
+                                    <div class="contats-list fl-wrap">
+                                        <ul class="no-list-style">
+                                            <li><span><i class="fal fa-phone"></i> Phone :</span> <a href="#">+7(123)987654</a></li>
+                                            <li><span><i class="fal fa-envelope"></i> Mail :</span> <a href="#">JessieWilcox@domain.com</a></li>
+                                            <li><span><i class="fal fa-browser"></i> Website :</span> <a href="#">themeforest.net</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="profile-widget-footer fl-wrap">
+                                        <a href="agent-single.html" class="btn float-btn color-bg small-btn">View Profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                             <!-- <div class="main-search-input-wrap shadow_msiw  fl-wrap">
+                                
+                                    <img src="{{event.featured_img.url}}"  alt="">
+                                
+                            </div> 
+                            
+                         -->
+                     
+                         <!-- vdf -->
+                       
+                            
+                            <div class="box-widget fl-wrap "id="sec2">
+                                <div class="box-widget bwt-first fl-wrap" style="margin-top:30px;">
+                                    <div class="box-widget-title fl-wrap box-widget-title-color color-bg no-top-margin">Gallery Images</div>
+                                <article class="post-article fl-wrap">
+                                    <div class="list-single-main-media fl-wrap">
+                                        <div class="single-slider-wrapper carousel-wrap fl-wrap">
+                                            <div class="single-slider fl-wrap carousel lightgallery"  >
+                                                <!-- slick-slide-item  -->
+                                                {% for pic in pictures %}
+                                                <div class="slick-slide-item">
+                                                   
+                                                    <div class="box-item">
+                                                        
+                                                        <!-- <a href="" class="gal-link popup-image"><i class="fal fa-search"  ></i></a> -->
+                                                        <!-- <img src="{% static 'images/' %}{{pic.event_images}}" width="300" height="300" alt=""> -->
+                                                        <img src="{{pic.event_images}}" width="300" height="300" alt="">
+                                                        
+                                                    </div>
+                                                    
+                                                    
+                                                </div>
+                                                {% endfor %}
+                                                
+                                                <!--  slick-slide-item end -->
+                                               
+                                               
+                                            </div>
+                                            <div class="swiper-button-prev ssw-btn"><i class="fas fa-caret-left"></i></div>
+                                            <div class="swiper-button-next ssw-btn"><i class="fas fa-caret-right"></i></div>
+                                        </div>
+                                    </div>
+                                    
+                                </article>
+                            </div>
+                            
+                            
+                            
+                            <!--box-widget-->
+                         
+                           
+                          
+                            
+                        </div>
+                        <!--box-widget end -->                                   
+                        <!--box-widget-->
+                        {% if brouchers.documnet %}
+                        <div class="box-widget fl-wrap">
+                            <div class="box-widget-title fl-wrap"> Documents</div>
+                            <div class="box-widget-content fl-wrap">
+                               
+                                <div class="bwc_download-list">
+                                    <a href="{% static 'images/' %}{{brouchers.document}}" download><span><i class="fal fa-file-pdf"></i></span>Download Pdf</a>
+                               
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                       
+                      
+
+                        <!-- speaker -->
+                                                       
+                    </div>
+                    <!--  sidebar end-->                            
+                </div>
+                <div class="fl-wrap limit-box"></div>
+                <div class="listing-carousel-wrapper carousel-wrap fl-wrap">
+                    <div class="list-single-main-item-title">
+                        <h3>Recent Events</h3>
+                    </div>
+                    <div class="listing-carousel carousel ">
+                        <!-- slick-slide-item -->
+                        
+                        <div class="slick-slide-item">
+                            {% for event in events  %}
+                            <!-- listing-item -->
+                            <div class="listing-item">
+                                    <article class="geodir-category-listing fl-wrap">
+                                    <div class="geodir-category-img fl-wrap">
+                                        <a href="{% url 'single-event' event.id %}" class="geodir-category-img_item">
+                                            <img src="{{event.featured_img.url}}" alt="">
+                                            <div class="overlay"></div>
+                                        </a>
+                                        <div class="geodir-category-location">
+                                            <a href="#4" class="map-item"><i class="fas fa-map-marker-alt"></i>{{event.address}}</a>
+                                        </div>
+                                        <ul class="list-single-opt_header_cat">
+                                            {% now "Y-m-d" as todays_date %}
+                                             <div >
+                                                {% if todays_date < event.event_start_date|date:"Y-m-d" %}
+                                                <li><a href="#" class="cat-opt " style="background-color: red;" >Upcoming</a></li>
+                                               {% elif  todays_date == event.event_start_date|date:"Y-m-d" %}
+                                               <li><a href="#" class="cat-opt " style="background-color: rgb(0, 255, 26);">Ongoing</a></li>
+                                               {% else %}
+                                               <li><a href="#" class="cat-opt color-bg" >Previous</a></li>
+                                               {% endif %}
+                                            
+                                           
+                                        </ul>
+                                        <a href="#" class="geodir_save-btn tolt" data-microtip-position="left" data-tooltip="Save"><span><i class="fal fa-heart"></i></span></a>
+                                        <a href="#" class="compare-btn tolt" data-microtip-position="left" data-tooltip="Compare"><span><i class="fal fa-eye"></i></span></a>
+                                        <div class="geodir-category-listing_media-list">
+                                           
+                                        </div>
+                                    </div>
+                                    
+                                </article>
+                               
+                            </div>
+                            {% endfor %}
+                            <!-- listing-item end-->							
+                        </div>
+                        <!-- slick-slide-item end-->
+                        <!-- slick-slide-item -->
+                        <div class="slick-slide-item">
+                            <!-- listing-item -->
+                          
+                            <!-- listing-item end-->							
+                        </div>
+                        <!-- slick-slide-item end-->									
+                        <!-- slick-slide-item -->
+                        <div class="slick-slide-item">
+                            <!-- listing-item -->
+                            <div class="listing-item">
+                                <article class="geodir-category-listing fl-wrap">
+                                    <div class="geodir-category-img fl-wrap">
+                                        <a href="listing-single.html" class="geodir-category-img_item">
+                                            <img src="images/all/1.jpg" alt="">
+                                            <div class="overlay"></div>
+                                        </a>
+                                        <div class="geodir-category-location">
+                                            <a href="#4" class="map-item"><i class="fas fa-map-marker-alt"></i> 34-42 Montgomery St , NY, USA</a>
+                                        </div>
+                                        <ul class="list-single-opt_header_cat">
+                                            <li><a href="#" class="cat-opt blue-bg">Sale</a></li>
+                                            <li><a href="#" class="cat-opt color-bg">Apartment</a></li>
+                                        </ul>
+                                        <a href="#" class="geodir_save-btn tolt" data-microtip-position="left" data-tooltip="Save"><span><i class="fal fa-heart"></i></span></a>
+                                        <a href="#" class="compare-btn tolt" data-microtip-position="left" data-tooltip="Compare"><span><i class="fal fa-eye"></i></span></a>
+                                        <div class="geodir-category-listing_media-list">
+                                            <span><i class="fas fa-camera"></i> 4</span>
+                                        </div>
+                                    </div>
+                                    <div class="geodir-category-content fl-wrap">
+                                        <h3><a href="listing-single.html">Gorgeous house for sale</a></h3>
+                                        <div class="geodir-category-content_price">$ 120,000</div>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas in pulvinar neque. Nulla finibus lobortis pulvinar. Donec a consectetur nulla.</p>
+                                        <div class="geodir-category-content-details">
+                                            <ul>
+                                                <li><i class="fal fa-bed"></i><span>2</span></li>
+                                                <li><i class="fal fa-bath"></i><span>1</span></li>
+                                                <li><i class="fal fa-cube"></i><span>220 ft2</span></li>
+                                            </ul>
+                                        </div>
+                                        <div class="geodir-category-footer fl-wrap">
+                                            <a href="agent-single.html" class="gcf-company"><img src="images/avatar/1.jpg" alt=""><span>By Mark Frosty</span></a>
+                                            <div class="listing-rating card-popup-rainingvis tolt" data-microtip-position="top" data-tooltip="Good" data-starrating2="4"></div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            <!-- listing-item end-->							
+                        </div>
+                     
+                        <div class="slick-slide-item">
+                         						
+                        </div>
+                       					
+                    </div>
+                    <div class="swiper-button-prev lc-wbtn lc-wbtn_prev"><i class="far fa-angle-left"></i></div>
+                    <div class="swiper-button-next lc-wbtn lc-wbtn_next"><i class="far fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- content end -->	
+   
+    
+    <!-- footer -->	
+    <footer class="main-footer fl-wrap">
+        <div class="footer-inner fl-wrap">
+            <div class="container">
+                <div class="row">
+                    <!-- footer widget-->
+                    <div class="col-md-3">
+                        <div class="footer-widget fl-wrap">
+                            <div class="footer-widget-logo fl-wrap">
+                                <img src="{% static 'images/Uploads/pes_logo.png' %}" alt="">
+                            </div>
+                            <p>PES University</p>
+                            <div class="fw_hours fl-wrap">
+                                <span>Email:<strong> admissions@pes.edu</strong></span>
+                                <span><i class="fal fa-map-marker"></i> Address:<strong> Outer Ring Rd, Banashankari 3rd Stage, Banashankari, Bengaluru, Karnataka 560085</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                 
+                    <!-- footer widget end-->
+                    <!-- footer widget-->
+                    <div class="col-md-3">
+                        <div class="footer-widget fl-wrap">
+                            <div class="footer-widget-title fl-wrap">
+                                <h4>Browse by Campus</h4>
+                            </div>
+                            <ul class="footer-list fl-wrap">
+                                <li><a href="about.html">PES University RR Campus</a></li>
+                                <li><a href="blog.html">PES University EC Campus</a></li>
+                                <li><a href="pricing.html">PES University HN Campus</a></li>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- footer widget end--> 
+                    <!-- footer widget-->
+                    <div class="col-md-3">
+                        <div class="footer-widget fl-wrap">
+                            <div class="footer-widget-title fl-wrap">
+                                <h4>Contact</h4>
+                            </div>
+                            <ul  class="footer-contacts fl-wrap">
+                                <!-- <li> <span><i class="fal fa-map-marker"></i> Adress :</span><a href="#" target="_blank"></a></li> -->
+                                <li><span><i class="fal fa-phone"></i> Telephone :</span><a href="#"> 080 - 26729994</a></li>
+                            </ul>
+                            <div class="footer-social fl-wrap">
+                                <ul>
+                                    <li><a href="https://www.facebook.com/pesuniversity" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                                    <li><a href="https://twitter.com/pesuniversity" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                                    <li><a href="https://www.instagram.com/pesuniversity/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                                    <li><a href="https://www.linkedin.com/school/pesuniversity/" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
+                                    <li><a href="https://www.youtube.com/pesuniversity" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- footer widget end-->   
+                    <!-- footer widget-->
+                    <div class="col-md-3">
+                        <div class="footer-widget fl-wrap">
+                            <div class="footer-widget-title fl-wrap">
+                                <h4>Filter by Ribbons</h4>
+                            </div>
+                            <div class="api-links fl-wrap">
+                                <a href="#" class="api-btn color-bg"><i class="fab fa-google-play"></i> ONGOING</a>  
+                                <a href="#" class="api-btn color-bg"><i class="fab fa-google-play"></i>UPCOMING</a>
+                                <a href="#" class="api-btn color-bg"><i class="fab fa-google-play"></i>PREVIOUS</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- footer widget end-->                                     
+                </div>
+            </div>
+        </div>
+        <!--sub-footer-->
+        <div class="sub-footer gray-bg fl-wrap">
+            <div class="container">
+                <div class="copyright"> © PES University | Powered by <a href="https://nith.ooo" target="_blank">NiTH</a></div>
+               
+            </div>
+        </div>
+        <!--sub-footer end -->                     
+    </footer>
+    <!-- footer end -->
+</div>
+<!-- wrapper end -->
+<!--register form -->
+<div class="main-register-wrap modal">
+    <div class="reg-overlay"></div>
+    <div class="main-register-holder tabs-act">
+        <div class="main-register-wrapper modal_main fl-wrap">
+            <div class="main-register-header color-bg">
+                <div class="main-register-logo fl-wrap">
+                    <img src="images/white-logo.png" alt="">
+                </div>
+                <div class="main-register-bg">
+                    <div class="mrb_pin"></div>
+                    <div class="mrb_pin mrb_pin2"></div>
+                </div>
+                <div class="mrb_dec"></div>
+                <div class="mrb_dec mrb_dec2"></div>
+            </div>
+            <div class="main-register">
+                <div class="close-reg"><i class="fal fa-times"></i></div>
+                <ul class="tabs-menu fl-wrap no-list-style">
+                    <li class="current"><a href="#tab-1"><i class="fal fa-sign-in-alt"></i> Login</a></li>
+                    <li><a href="#tab-2"><i class="fal fa-user-plus"></i> Register</a></li>
+                </ul>
+                <!--tabs -->                       
+                <div class="tabs-container">
+                    <div class="tab">
+                        <!--tab -->
+                        <div id="tab-1" class="tab-content first-tab">
+                            <div class="custom-form">
+                                <form method="post"  name="registerform">
+                                    <label>Username or Email Address  * <span class="dec-icon"><i class="fal fa-user"></i></span></label>
+                                    <input name="email" type="text"    onClick="this.select()" value="">
+                                    <div class="pass-input-wrap fl-wrap">
+                                        <label >Password  * <span class="dec-icon"><i class="fal fa-key"></i></span></label>
+                                        <input name="password" type="password"  autocomplete="off" onClick="this.select()" value="" >
+                                        <span class="eye"><i class="fal fa-eye"></i> </span>
+                                    </div>
+                                    <div class="lost_password">
+                                        <a href="#">Lost Your Password?</a>
+                                    </div>
+                                    <div class="filter-tags">
+                                        <input id="check-a3" type="checkbox" name="check">
+                                        <label for="check-a3">Remember me</label>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <button type="submit"  class="log_btn color-bg"> LogIn </button>
+                                </form>
+                            </div>
+                        </div>
+                        <!--tab end -->
+                        <!--tab -->
+                        <div class="tab">
+                            <div id="tab-2" class="tab-content">
+                                <div class="custom-form">
+                                    <form method="post"   name="registerform" class="main-register-form" id="main-register-form2">
+                                        <label >Full Name  * <span class="dec-icon"><i class="fal fa-user"></i></span></label>
+                                        <input name="name" type="text"    onClick="this.select()" value="">
+                                        <label>Email Address  * <span class="dec-icon"><i class="fal fa-envelope"></i></span></label>
+                                        <input name="email" type="text"    onClick="this.select()" value="">
+                                        <div class="pass-input-wrap fl-wrap">
+                                            <label >Password  * <span class="dec-icon"><i class="fal fa-key"></i></span></label>
+                                            <input name="password" type="password"  autocomplete="off"  onClick="this.select()" value="" >
+                                            <span class="eye"><i class="fal fa-eye"></i> </span>
+                                        </div>
+                                        <div class="filter-tags ft-list">
+                                            <input id="check-a2" type="checkbox" name="check">
+                                            <label for="check-a2">I agree to the <a href="#">Privacy Policy</a> and <a href="#">Terms and Conditions</a></label>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <button type="submit"     class="log_btn color-bg"> Register </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!--tab end -->
+                    </div>
+                    <!--tabs end -->
+                    <div class="log-separator fl-wrap"><span>or</span></div>
+                    <div class="soc-log fl-wrap">
+                        <p>For faster login or register use your social account.</p>
+                        <a href="#" class="facebook-log"> Facebook</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>
+ <!--register form end -->
+  <a class="to-top color-bg"><i class="fas fa-caret-up"></i></a>   
+ </div>
+ <!-- Main end -->
+
+{% endblock content %}   
