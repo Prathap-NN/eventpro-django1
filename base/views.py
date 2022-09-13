@@ -124,6 +124,15 @@ def events(request):
     events = None
 
     return render(request, 'base/dashboard.html')
+def Edit_Event1(request,pk):
+    event = Events.objects.get(id=pk)
+    if request.method == 'POST':
+        form = EventsForm(request.POST,instance=event)
+        if form.is_valid():
+            form.save()
+    form=EventsForm(instance=event)
+    context={'context':form}
+    return render(request,'base/edit-event1.html',context)
 
 def Edit_Event(request,pk):
     form = Events.objects.get(id=pk)
@@ -276,22 +285,25 @@ def myListing(request):
 def singlEvent(request,pk):
     
     countevent = Events.objects.get(id=pk)
-    countViews = Events.objects.get(id=pk)
+    # countViews = Events.objects.get(id=pk)
     #to count the number of views
-    counts = request.session.get('count',countevent.view_count)
-    views = counts + 1
-    request.session['count'] = views
-    countViews.view_count = views
-    countViews.save()
+    # counts = request.session.get('count',countevent.view_count)
+    # views = counts + 1
+    # request.session['count'] = views
+    # countViews.view_count = views
+    # countViews.save()
+    blog_object=Events.objects.get(id=pk)
+    print('bhdfjbdfhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh',blog_object)
+    blog_object.view_count=blog_object.view_count + 1
+    blog_object.save()
   #views
     event = Events.objects.get(id=pk)
     speaker =Speakers.objects.filter(event_id=pk)
     pictures = Pictures.objects.filter(event_id=pk)
-    print("got pictures as",pictures)
+    
     brouchures = Brochures.objects.filter(event_id=pk)
     recent_events = Events.objects.all().order_by('-created_at')[:4]
-    context={'event':event,'speaker':speaker,'pictures':pictures,'brouchers':brouchures,'recent_events':recent_events,'ct':countViews}
-    
+    context={'event':event,'speaker':speaker,'pictures':pictures,'brouchers':brouchures,'recent_events':recent_events,'blog_object':blog_object}
     return render(request, 'base/singlevent.html',context)  
 
 def loginPage(request):
